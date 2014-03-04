@@ -7,4 +7,5 @@ if os.environ.get('DATABASE_URL') is None:
 else:
 	print "FOUND DATABASE URL"
 	SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+	print SQLALCHEMY_DATABASE_URI
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
