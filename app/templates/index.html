@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>UBER TEST</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+<script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFd-RLy0Qc2R7qmNFQaQuum7EQT4DHsCI&sensor=false">
+</script>
+</head>
+<body >
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="#">Uber Test</a>
+        </div>
+    </div>
+    <div id="main" class="container">
+        <table class="table table-striped">
+            <tr><td style="width: 1px;"></td><td><b>Task</b></td><td><b>Options</b></td></tr>
+            <!-- ko foreach: tasks -->
+            <tr>
+                <td>
+                    <span data-bind="visible: done" class="label label-success">Done</span>
+                    <span data-bind="visible: !done()" class="label label-important">In Progress</span>
+                </td>
+                <td>
+                    <p>
+                        <b>Name: </b><span data-bind="text: name"></span>
+                    </p>
+
+                    <p> 
+                        <b>Latitude: </b><span data-bind="text: lat"></span>
+                    </p>
+                    <p>
+                        <b>Longitude: </b><span data-bind="text: lng"></span>
+                    </p>
+                    <p>
+                        <b>Address: </b><span data-bind="text: address"></span>
+                    </p>
+                </td>
+                <td>
+                    <button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
+                    <button data-bind="click: $parent.remove" class="btn">Delete</button>
+                    <button data-bind="click: $parent.mapIt" class="btn">Map It</button>
+                    <span data-bind="visible: done">
+                        <button data-bind="click: $parent.markInProgress" class="btn">Mark In Progress</button>
+                    </span>
+                    <span data-bind="visible: !done()">
+                        <button data-bind="click: $parent.markDone" class="btn">Mark Done</button>
+                    </span>
+                </td>
+            </tr>
+            <!-- /ko -->
+        </table>
+        <button data-bind="click: beginAdd" class="btn">Add Task</button>
+    </div>
+   
+    <div id="mapDiv" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="mapDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="mapDialogLabel">Map</h3>
+        </div>
+        <div class="modal-body">
+                <div id="map1Div" data-bind="map:mapOne" style="height:300px;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+
+    <div id="add" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="addDialogLabel">Add Task</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputAddress">Name</label>
+                    <div class="controls">
+                        <input data-bind="value: name" type="text" id="inputName" placeholder="Name" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputAddress">Address</label>
+                    <div class="controls">
+                        <input data-bind="value: address" type="text" id="inputAddress" placeholder="Address" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group" style="visibility:hidden;">
+                    <label class="control-label" for="inputLat">Latitude</label>
+                    <div class="controls">
+                        <input data-bind="value: lat" type="text" id="inputLat" placeholder="Latitude" style="width: 150px;">
+                    </div>
+                </div>
+                <div class="control-group" style="visibility:hidden;">
+                    <label class="control-label" for="inputLng">Longitude</label>
+                    <div class="controls">
+                        <input data-bind="value: lng" type="text" id="inputLng" placeholder="Longitude" style="width: 300px;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click: addTask" class="btn btn-primary">Add Task</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+    <div id="edit" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="editDialogLabel">Edit Task</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputLat">Lat</label>
+                    <div class="controls">
+                        <input data-bind="value: lat" type="text" id="inputLat" placeholder="Lat" style="width: 150px;" readonly>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputLng">Lng</label>
+                    <div class="controls">
+                        <input data-bind="value: lng" type="text" id="inputLng" placeholder="Lng" style="width: 150px;" readonly>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputAddress">Address</label>
+                    <div class="controls">
+                        <input data-bind="value: address" type="text" id="inputAddress" placeholder="Address" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputName">Name</label>
+                    <div class="controls">
+                        <input data-bind="value: name" type="text" id="inputTask" placeholder="Name" style="width: 150px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <label class="checkbox">
+                            <input data-bind="checked: done" type="checkbox"> Done
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click:editTask" class="btn btn-primary">Update Task</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+    <div id="login" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+        <div class="modal-header">
+            <h3 id="loginLabel">Sign In</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputUsername">Username</label>
+                    <div class="controls">
+                        <input data-bind="value: username" type="text" id="inputUsername" placeholder="Username">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputPassword">Password</label>
+                    <div class="controls">
+                        <input data-bind="value: password" type="password" id="inputPassword" placeholder="Password">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click: login" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Sign In</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function TasksViewModel() {
+            var self = this;
+            self.tasksURI = 'http://localhost:5000/todo/api/v1.0/tasks';
+            self.username = "";
+            self.password = "";
+            self.tasks = ko.observableArray();
+
+            self.ajax = function(uri, method, data) {
+                var request = {
+                    url: uri,
+                    type: method,
+                    contentType: "application/json",
+                    accepts: "application/json",
+                    cache: false,
+                    dataType: 'json',
+                    data: JSON.stringify(data),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", 
+                            "Basic " + btoa(self.username + ":" + self.password));
+                    },
+                    error: function(jqXHR) {
+                        console.log("ajax error " + jqXHR.status);
+                    }
+                };
+                return $.ajax(request);
+            }
+            self.updateTask = function(task, newTask) {
+                var i = self.tasks.indexOf(task);
+                self.tasks()[i].uri(newTask.uri);
+                self.tasks()[i].lat(newTask.lat);
+                self.tasks()[i].lng(newTask.lng);
+                self.tasks()[i].address(newTask.address);
+                self.tasks()[i].name(newTask.name);
+                self.tasks()[i].done(newTask.done);
+            }
+
+            self.beginAdd = function() {
+                $('#add').modal('show');
+            }
+            self.add = function(task) {
+                self.ajax(self.tasksURI, 'POST', task).done(function(data) {
+                    self.tasks.push({
+                        uri: ko.observable(data.task.uri),
+                        lat: ko.observable(data.task.lat),
+                        lng: ko.observable(data.task.lng),
+                        address: ko.observable(data.task.address),
+                        name: ko.observable(data.task.name),
+                        done: ko.observable(data.task.done)
+                    });
+                });
+            }
+            self.beginEdit = function(task) {
+                editTaskViewModel.setTask(task);
+                $('#edit').modal('show');
+            }
+            self.edit = function(task, data) {
+                self.ajax(task.uri(), 'PUT', data).done(function(res) {
+                    self.updateTask(task, res.task);
+                });
+            }
+            self.remove = function(task) {
+                self.ajax(task.uri(), 'DELETE').done(function() {
+                    self.tasks.remove(task);
+                });
+            }
+            self.mapIt = function(task) {
+                mapTaskViewModel.setMap(task);
+                $('#mapDiv').modal('show');
+            }
+            self.markInProgress = function(task) {
+                self.ajax(task.uri(), 'PUT', { done: false }).done(function(res) {
+                    self.updateTask(task, res.task);
+                });
+            }
+            self.markDone = function(task) {
+                self.ajax(task.uri(), 'PUT', { done: true }).done(function(res) {
+                    self.updateTask(task, res.task);
+                });
+            }
+            self.beginLogin = function() {
+                $('#login').modal('show');
+            }
+            self.login = function(username, password) {
+                self.username = username;
+                self.password = password;
+                self.ajax(self.tasksURI, 'GET').done(function(data) {
+                    for (var i = 0; i < data.tasks.length; i++) {
+                        self.tasks.push({
+                            uri: ko.observable(data.tasks[i].uri),
+                            lat: ko.observable(data.tasks[i].lat),
+                            lng: ko.observable(data.tasks[i].lng),
+                            address: ko.observable(data.tasks[i].address),
+                            name: ko.observable(data.tasks[i].name),
+                            done: ko.observable(data.tasks[i].done)
+                        });
+                    }
+                }).fail(function(jqXHR) {
+                    if (jqXHR.status == 403)
+                        setTimeout(self.beginLogin, 500);
+                });
+            }
+            
+            self.beginLogin();
+        }
+        function AddTaskViewModel() {
+            var self = this;
+            self.lat = ko.observable();
+            self.lng = ko.observable();
+            self.address = ko.observable();
+            self.name = ko.observable();
+        
+            self.addTask = function() {
+                geocoder.geocode({'address':self.address()}, function (results, status){
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        self.lat(results[0].geometry.location.d.toString());
+                        self.lng(results[0].geometry.location.e.toString());
+                        //console.log(results);
+                        console.log(self.lat());
+                        console.log(self.lng());
+                        $('#add').modal('hide');
+                        tasksViewModel.add({
+                            lat: self.lat(),
+                            lng:self.lng(),
+                            address:self.address(),
+                            name:self.name()
+                        });
+                        self.lat("");
+                        self.lng("");
+                        self.address("");
+                        self.name("");
+                    } else {
+                        alert ("Geocode was not successful for the following reason " + status);
+                    }
+                });
+            }
+        }
+        function MapTaskViewModel() {
+            var self = this;
+            self.mapOne = ko.observable({
+                            lat: ko.observable(12.24),
+                            lng:ko.observable(24.54)
+                        });
+
+             self.setMap = function(task) {
+                self.task = task;
+                self.mapOne({lat: task.lat(), lng: task.lng()});
+                $('mapDiv').modal('show');
+            }
+        }
+        function EditTaskViewModel() {
+            var self = this;
+            self.lat = ko.observable();
+            self.lng = ko.observable();
+            self.address = ko.observable();
+            self.name = ko.observable();
+            self.done = ko.observable();
+ 
+            self.setTask = function(task) {
+                self.task = task;
+                self.lat(task.lat());
+                self.lng(task.lng());
+                self.address(task.address());
+                self.name(task.name());
+                self.done(task.done());
+                $('edit').modal('show');
+            }
+ 
+            self.editTask = function() {
+                $('#edit').modal('hide');
+                tasksViewModel.edit(self.task, {
+                    lat: self.lat(),
+                    lng: self.lng(),
+                    address: self.address(),
+                    name: self.name(),
+                    done: self.done()
+                });
+            }
+        }
+        function LoginViewModel() {
+            var self = this;
+            self.username = ko.observable();
+            self.password = ko.observable();
+ 
+            self.login = function() {
+                $('#login').modal('hide');
+                tasksViewModel.login(self.username(), self.password());
+            }
+        }
+
+        ko.bindingHandlers.map = {
+            init: function (element, valueAccessor) {  
+            },
+            update: function(element, valueAccessor) {
+                 var mapObj = ko.utils.unwrapObservable(valueAccessor());
+                    var latLng = new google.maps.LatLng(mapObj.lat, mapObj.lng); 
+                    var mapOptions = { center: latLng, zoom: 6, mapTypeId: google.maps.MapTypeId.ROADMAP};
+                    mapObj.googleMap = new google.maps.Map(element, mapOptions);
+        
+                    mapObj.marker = new google.maps.Marker({
+                        map: mapObj.googleMap,
+                        position: latLng,
+                        title: "You Are Here",
+                        draggable: true
+                    }); 
+                    google.maps.event.addListenerOnce( mapObj.googleMap, 'idle', function() {
+                        google.maps.event.trigger( mapObj.googleMap, 'resize');
+                        latLng = mapObj.marker.getPosition();
+                        mapObj.googleMap.setCenter(latLng);
+                    });
+                    
+            }
+        };
+
+        
+        var tasksViewModel = new TasksViewModel();
+        var addTaskViewModel = new AddTaskViewModel();
+        var editTaskViewModel = new EditTaskViewModel();
+        var loginViewModel = new LoginViewModel();
+        var mapTaskViewModel = new MapTaskViewModel();
+
+        ko.applyBindings(tasksViewModel, $('#main')[0]);
+        ko.applyBindings(addTaskViewModel, $('#add')[0]);
+        ko.applyBindings(editTaskViewModel, $('#edit')[0]);
+        ko.applyBindings(loginViewModel, $('#login')[0]);
+        ko.applyBindings(mapTaskViewModel, $('#map1Div')[0]);
+        var geocoder = new google.maps.Geocoder();
+        
+    </script>
+</body>
+</html>
