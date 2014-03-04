@@ -5,3 +5,4 @@ sqlalchemy-migrate==0.7.2
 flask-whooshalchemy==0.55a
 flask-httpauth
 psycopg2==2.4.4
+gunicorn==0.17.2
