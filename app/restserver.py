@@ -71,6 +71,7 @@ def get_task(task_id):
 @app.route('/todo/api/v1.0/tasks', methods = ['POST'])
 @auth.login_required
 def create_task():
+    print "IN CREATE TASKS"
     if not request.json or not 'lat' in request.json:
         abort(400)
     if tasks:
