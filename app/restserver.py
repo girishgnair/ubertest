@@ -1,19 +1,8 @@
 from flask import jsonify, abort, request, make_response, url_for, render_template
-from flask.ext.httpauth import HTTPBasicAuth
 from flask.ext.sqlalchemy import SQLAlchemy
-from app import app, db, auth
+from app import app, db
 from models import Tasks
 
-@auth.get_password
-def get_password(username):
-    if username == 'girish':
-        return 'nair'
-    return None
- 
-@auth.error_handler
-def unauthorized():
-    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
-    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
     
 @app.errorhandler(400)
 def not_found(error):
@@ -42,8 +31,8 @@ def index():
 
 #Displaying all the entries    
 @app.route('/todo/api/v1.0/tasks', methods = ['GET'])
-@auth.login_required
 def get_tasks():
+    print "IN GET TASKS"
     temp = Tasks.query.all()
     for t in temp:
         task = {
@@ -59,7 +48,6 @@ def get_tasks():
 
 #Getting an entry 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['GET'])
-@auth.login_required
 def get_task(task_id):
     task = filter(lambda t: t['id'] == task_id, tasks)
     if len(task) == 0:
@@ -68,7 +56,6 @@ def get_task(task_id):
 
 #Creating an entry 
 @app.route('/todo/api/v1.0/tasks', methods = ['POST'])
-@auth.login_required
 def create_task():
     print "IN CREATE TASKS"
     if not request.json or not 'lat' in request.json:
@@ -93,7 +80,6 @@ def create_task():
 
 #Updating an entry 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['PUT'])
-@auth.login_required
 def update_task(task_id):
     
     task = filter(lambda t: t['id'] == task_id, tasks)
@@ -127,7 +113,6 @@ def update_task(task_id):
 
 #Deleting an entry    
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods = ['DELETE'])
-@auth.login_required
 def delete_task(task_id):
     task = filter(lambda t: t['id'] == task_id, tasks)
     if len(task) == 0:

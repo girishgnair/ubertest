@@ -154,30 +154,6 @@
             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
         </div>
     </div>
-    <div id="login" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
-        <div class="modal-header">
-            <h3 id="loginLabel">Sign In</h3>
-        </div>
-        <div class="modal-body">
-            <form class="form-horizontal">
-                <div class="control-group">
-                    <label class="control-label" for="inputUsername">Username</label>
-                    <div class="controls">
-                        <input data-bind="value: username" type="text" id="inputUsername" placeholder="Username">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="inputPassword">Password</label>
-                    <div class="controls">
-                        <input data-bind="value: password" type="password" id="inputPassword" placeholder="Password">
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button data-bind="click: login" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Sign In</button>
-        </div>
-    </div>
     <script type="text/javascript">
         function TasksViewModel() {
             var self = this;
@@ -258,30 +234,6 @@
                     self.updateTask(task, res.task);
                 });
             }
-            self.beginLogin = function() {
-                $('#login').modal('show');
-            }
-            self.login = function(username, password) {
-                self.username = username;
-                self.password = password;
-                self.ajax(self.tasksURI, 'GET').done(function(data) {
-                    for (var i = 0; i < data.tasks.length; i++) {
-                        self.tasks.push({
-                            uri: ko.observable(data.tasks[i].uri),
-                            lat: ko.observable(data.tasks[i].lat),
-                            lng: ko.observable(data.tasks[i].lng),
-                            address: ko.observable(data.tasks[i].address),
-                            name: ko.observable(data.tasks[i].name),
-                            done: ko.observable(data.tasks[i].done)
-                        });
-                    }
-                }).fail(function(jqXHR) {
-                    if (jqXHR.status == 403)
-                        setTimeout(self.beginLogin, 500);
-                });
-            }
-            
-            self.beginLogin();
         }
         function AddTaskViewModel() {
             var self = this;
@@ -357,16 +309,6 @@
                 });
             }
         }
-        function LoginViewModel() {
-            var self = this;
-            self.username = ko.observable();
-            self.password = ko.observable();
- 
-            self.login = function() {
-                $('#login').modal('hide');
-                tasksViewModel.login(self.username(), self.password());
-            }
-        }
 
         ko.bindingHandlers.map = {
             init: function (element, valueAccessor) {  
@@ -396,13 +338,11 @@
         var tasksViewModel = new TasksViewModel();
         var addTaskViewModel = new AddTaskViewModel();
         var editTaskViewModel = new EditTaskViewModel();
-        var loginViewModel = new LoginViewModel();
         var mapTaskViewModel = new MapTaskViewModel();
 
         ko.applyBindings(tasksViewModel, $('#main')[0]);
         ko.applyBindings(addTaskViewModel, $('#add')[0]);
         ko.applyBindings(editTaskViewModel, $('#edit')[0]);
-        ko.applyBindings(loginViewModel, $('#login')[0]);
         ko.applyBindings(mapTaskViewModel, $('#map1Div')[0]);
         var geocoder = new google.maps.Geocoder();
         
