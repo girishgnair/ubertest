@@ -1,6 +1,6 @@
 function TasksViewModel() {
             var self = this;
-            self.tasksURI = 'http://girishubertest.heroku.com/todo/api/v1.0/tasks';
+            self.tasksURI = 'http://localhost:8000/todo/api/v1.0/tasks';
             self.username = "";
             self.password = "";
             self.tasks = ko.observableArray();
