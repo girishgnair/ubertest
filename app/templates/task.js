@@ -4,6 +4,11 @@ function TasksViewModel() {
             self.username = "";
             self.password = "";
             self.tasks = ko.observableArray();
+            self.lat = ko.observable();
+            self.lng = ko.observable();
+            self.address = ko.observable();
+            self.name = ko.observable();
+            self.done = ko.observable();
 
             self.ajax = function(uri, method, data) {
                 var request = {
@@ -80,14 +85,15 @@ function TasksViewModel() {
 
             self.ajax(self.tasksURI, 'GET').done(function(data) {
                 for (var i = 0; i < data.tasks.length; i++) {
+                    console.log(data.tasks[i]);
                     self.tasks.push({
                         //tasks: ko.observable(data.tasks);
                         uri: ko.observable(data.tasks[i].uri),
-                        lat: ko.observable(data.task[i].lat),
-                        lng: ko.observable(data.task[i].lng),
-                        address: ko.observable(data.task[i].address),
-                        name: ko.observable(data.task[i].name),
-                        done: ko.observable(data.task[i].done)
+                        name: ko.observable(data.tasks[i].name),
+                        lat: ko.observable(data.tasks[i].lat),
+                        lng: ko.observable(data.tasks[i].lng),
+                        address: ko.observable(data.tasks[i].address),
+                        done: ko.observable(data.tasks[i].done)
                     });
                 }
             });
