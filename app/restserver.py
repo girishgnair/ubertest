@@ -24,6 +24,10 @@ def make_public_task(task):
             new_task[field] = task[field]
     return new_task
 
+@app.route('/js')
+def get_js():
+    return render_template("task.js")
+
 @app.route('/')
 @app.route('/index')
 def index():
