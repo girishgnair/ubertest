@@ -157,7 +157,7 @@
     <script type="text/javascript">
         function TasksViewModel() {
             var self = this;
-            self.tasksURI = 'http://localhost:5000/todo/api/v1.0/tasks';
+            self.tasksURI = 'http://girishubertest.herokuapp.com/todo/api/v1.0/tasks';
             self.username = "";
             self.password = "";
             self.tasks = ko.observableArray();
@@ -173,10 +173,10 @@
                     data: JSON.stringify(data),
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("Authorization", 
-                            "Basic " + btoa(self.username + ":" + self.password));
+                            "Basic ");
                     },
                     error: function(jqXHR) {
-                        console.log("ajax error " + jqXHR.status);
+                        alert("ajax error " + jqXHR.status);
                     }
                 };
                 return $.ajax(request);
@@ -234,6 +234,18 @@
                     self.updateTask(task, res.task);
                 });
             }
+            self.ajax(self.tasksURI, 'GET').done(function(data) {
+                for (var i = 0; i < data.tasks.length; i++) {
+                    self.tasks.push({
+                        uri: ko.observable(data.tasks[i].uri),
+                        lat: ko.observable(data.task[i].lat),
+                        lng: ko.observable(data.task[i].lng),
+                        address: ko.observable(data.task[i].address),
+                        name: ko.observable(data.task[i].name),
+                        done: ko.observable(data.task[i].done)
+                    });
+                }
+            });
         }
         function AddTaskViewModel() {
             var self = this;

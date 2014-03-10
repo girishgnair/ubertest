@@ -32,7 +32,6 @@ def index():
 #Displaying all the entries    
 @app.route('/todo/api/v1.0/tasks', methods = ['GET'])
 def get_tasks():
-    print "IN GET TASKS"
     temp = Tasks.query.all()
     for t in temp:
         task = {
@@ -57,7 +56,6 @@ def get_task(task_id):
 #Creating an entry 
 @app.route('/todo/api/v1.0/tasks', methods = ['POST'])
 def create_task():
-    print "IN CREATE TASKS"
     if not request.json or not 'lat' in request.json:
         abort(400)
     if tasks:
