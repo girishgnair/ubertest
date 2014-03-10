@@ -31,11 +31,12 @@ def get_js():
 @app.route('/')
 @app.route('/index')
 def index():
-     return render_template("index.html")
+    return render_template("index.html")
 
 #Displaying all the entries    
 @app.route('/todo/api/v1.0/tasks', methods = ['GET'])
 def get_tasks():
+    tasks = []
     temp = Tasks.query.all()
     for t in temp:
         task = {
