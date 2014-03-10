@@ -326,6 +326,7 @@
             init: function (element, valueAccessor) {  
             },
             update: function(element, valueAccessor) {
+                alert("In maps");
                  var mapObj = ko.utils.unwrapObservable(valueAccessor());
                     var latLng = new google.maps.LatLng(mapObj.lat, mapObj.lng); 
                     var mapOptions = { center: latLng, zoom: 6, mapTypeId: google.maps.MapTypeId.ROADMAP};
