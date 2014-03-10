@@ -293,13 +293,14 @@
             }
         }
         function EditTaskViewModel() {
+
             var self = this;
             self.lat = ko.observable();
             self.lng = ko.observable();
             self.address = ko.observable();
             self.name = ko.observable();
             self.done = ko.observable();
- 
+            
             self.setTask = function(task) {
                 self.task = task;
                 self.lat(task.lat());
@@ -311,13 +312,21 @@
             }
  
             self.editTask = function() {
-                $('#edit').modal('hide');
-                tasksViewModel.edit(self.task, {
-                    lat: self.lat(),
-                    lng: self.lng(),
-                    address: self.address(),
-                    name: self.name(),
-                    done: self.done()
+                geocoder.geocode({'address':self.address()}, function (results, status){
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        self.lat(results[0].geometry.location.d.toString());
+                        self.lng(results[0].geometry.location.e.toString());
+                        $('#edit').modal('hide');
+                        tasksViewModel.edit(self.task, {
+                            lat: self.lat(),
+                            lng: self.lng(),
+                            address: self.address(),
+                            name: self.name(),
+                            done: self.done()
+                        });
+                    } else {
+                        alert ("Geocode was not successful for the following reason " + status);
+                    }
                 });
             }
         }
@@ -326,7 +335,6 @@
             init: function (element, valueAccessor) {  
             },
             update: function(element, valueAccessor) {
-                alert("In maps");
                  var mapObj = ko.utils.unwrapObservable(valueAccessor());
                     var latLng = new google.maps.LatLng(mapObj.lat, mapObj.lng); 
                     var mapOptions = { center: latLng, zoom: 6, mapTypeId: google.maps.MapTypeId.ROADMAP};
