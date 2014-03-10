@@ -157,7 +157,7 @@
     <script type="text/javascript">
         function TasksViewModel() {
             var self = this;
-            self.tasksURI = 'http://girishubertest.herokuapp.com/todo/api/v1.0/tasks';
+            self.tasksURI = 'http://localhost:8000/todo/api/v1.0/tasks';
             self.username = "";
             self.password = "";
             self.tasks = ko.observableArray();
@@ -234,6 +234,20 @@
                     self.updateTask(task, res.task);
                 });
             }
+
+            self.ajax(self.tasksURI, 'GET').done(function(data) {
+                for (var i = 0; i < data.tasks.length; i++) {
+                    self.tasks.push({
+                        //tasks: ko.observable(data.tasks);
+                        uri: ko.observable(data.tasks[i].uri),
+                        lat: ko.observable(data.task[i].lat),
+                        lng: ko.observable(data.task[i].lng),
+                        address: ko.observable(data.task[i].address),
+                        name: ko.observable(data.task[i].name),
+                        done: ko.observable(data.task[i].done)
+                    });
+                }
+            });
         }
         function AddTaskViewModel() {
             var self = this;
@@ -343,18 +357,6 @@
             }
         };
 
-        self.ajax(self.tasksURI, 'GET').done(function(data) {
-            for (var i = 0; i < data.tasks.length; i++) {
-                self.tasks.push({
-                    uri: ko.observable(data.tasks[i].uri),
-                    lat: ko.observable(data.task[i].lat),
-                    lng: ko.observable(data.task[i].lng),
-                    address: ko.observable(data.task[i].address),
-                    name: ko.observable(data.task[i].name),
-                    done: ko.observable(data.task[i].done)
-                });
-            }
-        });
         
         var tasksViewModel = new TasksViewModel();
         var addTaskViewModel = new AddTaskViewModel();
