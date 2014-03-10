@@ -85,7 +85,7 @@ function TasksViewModel() {
 
             self.ajax(self.tasksURI, 'GET').done(function(data) {
                 for (var i = 0; i < data.tasks.length; i++) {
-                    console.log(data.tasks[i]);
+                    
                     self.tasks.push({
                         //tasks: ko.observable(data.tasks);
                         uri: ko.observable(data.tasks[i].uri),
