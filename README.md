@@ -7,6 +7,8 @@ I usually work in the LAMP framework. But decided to learn the Flask MicroFrameW
 
 Database used is sqlite, using the Flask-SQLAlchemy extension to manage the application. This extension provides a wrapper for the SQLAlchemy project, which is an Object Relational Mapper or ORM
 
+I have based this coding example using http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world. As I do not have any experience in python web programming. It was definitely a fun challenge to learn from this tutorial and change the code around to meet my requirements.
+
 Setup
 -----
 
